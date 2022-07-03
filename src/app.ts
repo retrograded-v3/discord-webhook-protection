@@ -1,5 +1,5 @@
 import express from 'express';
-import { Webhook } from './types/embed.types'
+import { Webhook } from './types/webhook.types'
 import axios from 'axios';
 import bodyParser from 'body-parser';
 import rateLimit from 'express-rate-limit';
