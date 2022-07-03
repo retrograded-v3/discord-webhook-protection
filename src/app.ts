@@ -8,8 +8,9 @@ const app = express();
 const port = 8080;
 
 const CONFIG = {
-	WEBHOOK_URL: 'https://discord.com/api/webhooks/993029971012497448/ND1jWSwEmrtb7_Yk81C5OYHDRFH0E6wOcRT8MGWJ-NpDnKnOJuamvgzl7sSB3Hzk8bQO',
+	WEBHOOK_URL: '',
 	CENSORSHIP: true,
+	ALLOW_PINGS: false,
 	RATE_LIMITING: {
 		ENABLED: true,
 		SETTINGS: {
@@ -37,6 +38,9 @@ if (CONFIG.RATE_LIMITING.ENABLED) {
 }
 
 app.post("/webhook", ( req, res ) => {
+	
+	let allowPings:boolean = false;
+
 	if (CONFIG.CENSORSHIP) {
 		let stringifiedBody = JSON.stringify(req.body).toLowerCase();
 		for (let WORD of CENSORED_WORDS) {
@@ -46,7 +50,9 @@ app.post("/webhook", ( req, res ) => {
 
 	if (CONFIG.KEY.ENABLED && req.body.key != CONFIG.KEY.KEY) { throw new Error('Invalid Key'); }
 
-	const webHook = new Webhook(req.body.username, req.body.content, req.body.avatar_url, req.body.embeds);
+	if (CONFIG.ALLOW_PINGS) { allowPings = true }
+	
+	const webHook = new Webhook(req.body.username, req.body.content, req.body.avatar_url, req.body.embeds, allowPings);
 	sendWebhook(webHook, CONFIG.WEBHOOK_URL).then(_ => {
 		res.status(200).send('Success');
 	}).catch(err => {

@@ -57,13 +57,18 @@ interface Embed {
 export class Webhook {
 	username: string;
 	content: string;
+	allowed_mentions?: object;
 	avatar_url?: string;
 	embeds?: Array<Embed>;
 
-	constructor(username: string, content: string, avatar_url?: string, embeds?: Array<Embed>) {
+	constructor(username: string, content: string, avatar_url?: string, embeds?: Array<Embed>, allowPings?: boolean) {
 		this.username = username;
 		this.avatar_url= avatar_url;
 		this.content = content;
+		
+		if (!allowPings) {
+			this.allowed_mentions = { parse: [] }
+		}
 		
 		if (content.length > 2000) { throw new Error("Content length must not exceed 2000 characters") }
 		
